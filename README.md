@@ -78,6 +78,9 @@ All measures are organized into **logical folders** for clarity:
 | SVG & Icons              | Symbols for growth/decline/neutral cards                                   |
 | Auxiliary Measures       | Formatting, flags, slicer sync, headers                                    |
 
+> 📸 Folder Display:
+  - ![Image](https://github.com/user-attachments/assets/4e7e5c3c-3e31-4629-b20d-2141b497ab65)
+
 ---
 
 ### 4. 🎨 UI/UX Design with Figma
@@ -89,27 +92,59 @@ All measures are organized into **logical folders** for clarity:
   - SVG-enhanced cards
   - Gradient and flat-designed backgrounds
   - Branded icon navigation
+    
+> 📸 Figma Display:
+  - ![Image](https://github.com/user-attachments/assets/c64c561a-9a62-4e2e-9a32-a1426e35f02f)
+
 
 ---
 
 ### 5. 📈 Dashboard Pages
+  - All pages have 5 filters: Year, Month, Seller, Territory, Continent
 
-- **Executive Summary**  
-  KPIs, Revenue, Gross Margin, Growth %, Highlights
+- **General**  
+  KPIs, Revenue, Gross Margin, Growth %, Highlights, Manager, Category and Region View
+  
+> 📸 General Page:
+![Image](https://github.com/user-attachments/assets/5ef84557-67db-488d-a29f-153268560448)
 
+- **Analytical**  
+  Full Continent decomposition: Gross Revenue, $ Gross Margin, % Gross Margin, QtySold, Product Positivation, % Product Positivation, Coverage, %Coverage
+
+> 📸 Analytical Page:
+![Image](https://github.com/user-attachments/assets/664edc29-4b8a-4023-b6b3-18d0db0aac64)
+   
+- **HeatMap**  
+  Full decomposition: Gross Revenue and Running Totals (distribuited daily and weekly)
+
+> 📸 HeatMap Page:
+![Image](https://github.com/user-attachments/assets/7f3dc2cd-1c6f-4f86-992c-e13e6a9e2cdd)
+  
+- **Sellers**  
+  Full decomposition: Gross Revenue, $ Gross Margin, % Gross Margin vs goal open by sellers
+
+> 📸 Sellers Page:
+![Image](https://github.com/user-attachments/assets/35f5d973-4016-4a3a-8c4b-091f8cdc5c46)
+  
 - **PVM Analysis**  
   Full decomposition: Price, Volume, Mix – Sales & Margin Impact
+  
+> 📸 PVM Page:
+![Image](https://github.com/user-attachments/assets/4fb108a2-8abf-4924-bce2-84cb032e0314)
+  
+- **Pareto Contribution**  
+  Pareto 80/20 charts, Category share, Market movement
+  
+> 📸 Pareto Page:
+![Image](https://github.com/user-attachments/assets/38e210d9-65de-4ab6-8c62-cee1f28a8966)
 
 - **Statistical Insights**  
   Elasticity Index, Z-Score, Mean, Median, Std Dev, Moving AVG
 
-- **Category Contribution**  
-  Pareto 80/20 charts, Category share, Market movement
+> 📸 Statistical Page:
+![Image](https://github.com/user-attachments/assets/6ebb0a72-c201-4b34-bb1f-280ca30ff51e)
 
-- **Seller Analysis**  
-  Sales breakdown by Employee, Store, Territory
-
----
+  
 
 ## ✅ Outcomes
 
