@@ -6,6 +6,7 @@ This Power BI dashboard was developed to analyze product performance, identify k
 
 - SQL (Data extraction, Data modeling and transformation)
 - Power BI (DAX and Visualization)
+- Figma (Backgrounds and Design)
 
 
 ## 📊 Key KPIs and Insights
@@ -13,15 +14,15 @@ This Power BI dashboard was developed to analyze product performance, identify k
 - 🔝 **Top-Selling Products**: Identify best-performing items by revenue and volume (ABC/Pareto).
 - 📉 **Sales Trends**: Monthly/weekly views to understand performance over time.
 - 💰 **Profitability Analysis**: Margin tracking per product category.
-- 📦 **Inventory Impact**: Understand which products impact turnover ratios.
-- 📍 **Regional Performance**: Compare product sales across branches/locations.
+- 📍 **Regional Performance**: Compare product sales across locations.
 - 📈 **Growth Metrics**: Analyze YoY and MoM growth per product.
+- 💹 **Statistical KPIs**: Analyze outliers and distorcions 
 
 ## 🖼️ Dashboard Preview
 
-> 📸 Add a screenshot in the `assets/` folder and link here:
+> 📸 General Page:
 
-![Product Dashboard Preview](assets/product-dashboard-screenshot.png)
+![Image](https://github.com/user-attachments/assets/5ef84557-67db-488d-a29f-153268560448)
 
 ## 🧠 Business Impact
 
@@ -31,6 +32,14 @@ This dashboard enables managers to:
 - Identify underperforming products
 - Allocate marketing efforts effectively
 - Track category-level contribution to total revenue
-- Evaluate PVM - Price, Volume, Mix changes. 
+- Evaluate PVM - Price, Volume, Mix changes
+- Outlier behaviour
 
 ## 📂 Project Structure
+
+
+
+
+
+
+
