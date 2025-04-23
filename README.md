@@ -146,13 +146,72 @@ All measures are organized into **logical folders** for clarity:
 
   
 
-## ✅ Outcomes
+ ✅ Outcomes and future strategies
 
-This dashboard allows:
-- Strategic decision-making for sales and marketing
-- Analysis of trends, price sensitivity, and performance breakdown
-- A **professional, modern layout** with deep statistical insights
-- Executives to **track margin gains/losses by root cause**
+## 📊 Business Analysis Summary — FY2014
+🚨 Revenue Performance Breakdown
+In FY2014, the company faced a global revenue decline of 54%, impacting all major regions:
+
+
+**Region	Revenue Decrease**
+North America	–59%
+Europe	–47%
+Pacific	–35%
+📉 The Components category saw a 62.5% drop in sales.
+
+👕 Clothing sales declined by 39%, indicating category pressure.
+
+🔍 Insight: These figures highlight product-level weaknesses and regional performance gaps, especially for discretionary or seasonal categories.
+
+🏆 MVP Product Alert: Mountain Bikes
+In the Northeast, Mountain Bike sales fell by 83%.
+
+As our Most Valuable Product (MVP), this represents a critical commercial concern.
+
+✅ Action Needed: Regional campaign boosts, product repackaging, and customer reactivation efforts.
+
+💰 Cost Management Cushion
+Despite revenue loss, Gross Margin improved due to:
+
+A 58% reduction in overall costs, outpacing revenue decline.
+
+🧾 This cost agility helped protect margins, reflecting operational resilience.
+
+## 📐 PVM (Price, Volume, Mix) Analysis
+
+PVM Driver	Margin Impact
+Volume	– €2M
+Price / Mix	Balanced / Stable
+The largest driver of margin decline was customer churn — clients who stopped buying entirely.
+
+🛠️ Recommendation: Launch retention & re-engagement campaigns using churn probability models.
+
+## 📦 ABC & Pareto – Revenue Concentration Risk
+Just 2 products generate ~60% of Global Revenue.
+
+This creates over-reliance on specific SKUs (e.g., Mountain Bikes, Touring Bikes).
+
+⚠️ Risk Alert: Any downturn in these can severely impact overall performance.
+
+## 🧮 Statistical Outlier Analysis (Z-Score)
+Average Z-Score across 27 subcategories: –0.33
+
+Top 3 products Z-Scores: 3.11, 3.08, 2.80
+
+📌 These values confirm that a few categories dominate the business — a classic right-skewed outlier distribution.
+
+## 🧠 Final Strategic Recommendations
+✅ Diversify Revenue
+→ Invest in mid-tier and low-performing segments to normalize contribution distribution.
+
+✅ Prioritize Customer Retention
+→ Reactivate high-value churned customers through CRM-driven marketing.
+
+✅ Stabilize MVP Sales
+→ Improve logistics, inventory, and vendor performance for flagship products.
+
+✅ Expand Analytics
+→ Leverage Z-score, price elasticity, and PVM trends in monthly performance reviews.
 
 
 
