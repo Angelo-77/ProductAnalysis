@@ -226,8 +226,9 @@ Power BI | SQL | Excel | VBA | ETL | Business Intelligence | KPI Development
 
 ---
 
-**📬 Feel free to reach out to me if you’d like to connect, collaborate, or discuss data!**
-  ➡️ https://www.linkedin.com/in/miguel-angelo-015782198/
+**📬 Let’s connect! - Feel free to reach out to me if you’d like to connect, collaborate, or discuss data!**
+- 📧 angeloanalises@gmail.com  
+- 💼 [LinkedIn](https://www.linkedin.com/in/miguel-angelo-015782198/)
 
 
 
