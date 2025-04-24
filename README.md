@@ -2,7 +2,7 @@
 
 This Power BI dashboard was developed to analyze product performance, identify key sales trends, and support data-driven decision-making for product strategy and inventory planning.
 
-## 🧰 Tools Used
+## ⚙️ Tools Used
 
 - SQL (Data extraction, Data modeling and transformation)
 - Power BI (DAX and Visualization)
