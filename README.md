@@ -145,29 +145,28 @@ All measures are organized into **logical folders** for clarity:
 ![Image](https://github.com/user-attachments/assets/6ebb0a72-c201-4b34-bb1f-280ca30ff51e)
 
   
-
  ✅ Outcomes and future strategies
 
 ## 📊 Business Analysis Summary — FY2014
 🚨 Revenue Performance Breakdown
 In FY2014, the company faced a global revenue decline of 54%, impacting all major regions:
 
-**Region	Revenue Decrease**
-North America	–59%
-Europe	–47%
-Pacific	–35%
+**🔻Region	Revenue Decrease**
 
+  - North America	–59%
+  - Europe	–47%
+  - Pacific	–35%
   - The Components category saw a 62.5% drop in sales.
   - Clothing sales declined by 39%, indicating category pressure.
   - Insight: These figures highlight product-level weaknesses and regional performance gaps, especially for discretionary or seasonal categories.
 
 **🏆 MVP Product Alert: Mountain Bikes**
+
   - In the Northeast, Mountain Bike sales fell by 83%.
   - As our Most Valuable Product (MVP), this represents a critical commercial concern.
   - **Action Needed**: Regional campaign boosts, product repackaging, and customer reactivation efforts.
-
-**Cost Management Cushion**
-
+    
+**⚠ Cost Management Cushion**
   - Despite revenue loss, Gross Margin improved due to:
   - 58% reduction in overall costs, outpacing revenue decline.
   - This cost agility helped protect margins, reflecting operational resilience.
@@ -206,7 +205,7 @@ Pacific	–35%
 
 
 ## 🔗 Dashboard Access  
-➡️ https://app.powerbi.com/view?r=eyJrIjoiOTA3YzlmM2MtNGRlOC00OWM2LWE3OGUtZmVjN2EwMzFlOTQ1IiwidCI6IjE0Y2JkNWE3LWVjOTQtNDZiYS1iMzE0LWNjMGZjOTcyYTE2MSIsImMiOjh9
+📊[Dashboard](https://app.powerbi.com/view?r=eyJrIjoiOTA3YzlmM2MtNGRlOC00OWM2LWE3OGUtZmVjN2EwMzFlOTQ1IiwidCI6IjE0Y2JkNWE3LWVjOTQtNDZiYS1iMzE0LWNjMGZjOTcyYTE2MSIsImMiOjh9)
 
 
 ## 👤 About Me
