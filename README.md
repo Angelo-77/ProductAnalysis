@@ -205,6 +205,35 @@ Pacific	–35%
 
 
 
+## 🔗 Dashboard Access  
+➡️ https://app.powerbi.com/view?r=eyJrIjoiOTA3YzlmM2MtNGRlOC00OWM2LWE3OGUtZmVjN2EwMzFlOTQ1IiwidCI6IjE0Y2JkNWE3LWVjOTQtNDZiYS1iMzE0LWNjMGZjOTcyYTE2MSIsImMiOjh9
+
+
+## 👤 About Me
+
+I’m a results-driven **Data Analyst and Business Intelligence professional** with a strong foundation in **Power BI, SQL, Excel (including VBA), and KPI Management**. With experience spanning engineering, tax, and commercial sectors, I bring a unique blend of technical expertise and business strategy to every project I take on.
+
+My career journey includes working at industry-leading companies like **Deloitte** and **Ambev**, where I automated processes, built dashboards, and translated complex data into meaningful insights. At **Deloitte**, I specialized in **Direct and Indirect Tax**, developing critical control workpapers and delivering the firm’s **first Power BI dashboard for Direct Taxes**. At **Ambev**, part of **AB InBev** (the world’s largest brewery), I created automated controls and VBA tools to evaluate sales and product performance.
+
+Most recently, at **Draft Solutions**, an engineering consulting firm, I served as a **Senior Planning Analyst**. I managed engineering contracts, developed dashboards to monitor project KPIs, and designed macros for revenue forecasting and goal tracking. I also conducted **CAPEX calculations for Conceptual Engineering Projects**.
+
+I hold a degree in **Accounting from PUC Minas**—recognized as the **largest Catholic university in the world**. While there, I received an academic award for developing a VBA tool to analyze the J150 block of the ECD, representing a company’s **Income Statement structure**.
+
+I’m passionate about creating powerful BI solutions that improve decision-making, automate workflows, and drive measurable results.
+
+---
+
+**🔧 Technical Skills**:  
+Power BI | SQL | Excel | VBA | ETL | Business Intelligence | KPI Development  
+
+
+**📬 Feel free to reach out to me if you’d like to connect, collaborate, or discuss data!**
+➡️ https://www.linkedin.com/in/miguel-angelo-015782198/
+
+
+
+
+
 
 
 
