@@ -83,7 +83,7 @@ All measures are organized into **logical folders** for clarity:
 > 📸 Folder Display:
   - ![Image](https://github.com/user-attachments/assets/4e7e5c3c-3e31-4629-b20d-2141b497ab65)
 
-> 🏹 To see these measures in dax sytnax - click in this folder ['DaxMeasures'](https://github.com/Angelo-77/ProductAnalysis/blob/4f16eaff580793891e8fcf898b310ce9a3d3db7b/DaxMeasures)
+> 🏹 To see these measures in dax syntax - click in this folder ['DaxMeasures'](https://github.com/Angelo-77/ProductAnalysis/blob/4f16eaff580793891e8fcf898b310ce9a3d3db7b/DaxMeasures)
 ---
 
 ### 4. 🎨 UI/UX Design with Figma
