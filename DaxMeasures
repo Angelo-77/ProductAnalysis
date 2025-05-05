@@ -1,0 +1,802 @@
+## 💹 Dax Measures
+
+# 🧲 Here are some examples of measures, i`m not showing all formulas. If you want all measures, you can contact with me. 
+
+# 🛠 General Measures
+
+● M | % GrossMargin = DIVIDE([M | $ GrossMargin],[M | $ GrossRevenue])
+● M | $  DistanceGoal = [M | $ GrossRevenue] - [M | $ TotalGoal]
+● M | $ Comission = 
+
+    CALCULATE(
+        SUMX(
+            vwFactSales,
+            vwFactSales[OrderQty] * vwFactSales[UnitPrice] * vwFactSales[ComissionIndex]
+        )
+    )
+
+M | $ GrossMargin = [M | $ GrossRevenue]  - [M | $ TotalDiscount] - [M | $ TotalCost]
+
+# ⌚ Time Measures
+
+● M | t% GrossMargin LY = 
+    CALCULATE([M | % GrossMargin],
+    DATEADD(vwdCalendar[date],-1,YEAR)
+    )
+
+● M | t$ GrossRevenueRunningTotal = 
+VAR vMaxDate = 
+    CALCULATE(
+        MAX(vwFactSales[OrderDate]),
+        FILTER(
+            vwFactSales,
+            MAX(vwFactSales[OrderDate])
+        )
+    )
+RETURN
+    
+         CALCULATE(
+             [M | $ GrossRevenue],
+             CALCULATETABLE(
+                 vwdCalendar,
+                 vwdCalendar[date] <= vMaxDate,
+                 VALUES(vwdCalendar[year])
+             )
+         )
+# 🎯 KPIs
+
+● M | % Coverage = 
+DIVIDE(
+    DISTINCTCOUNT(vwFactSales[CustomerID]),
+    COUNT(vwDimCustomer[BusinessEntityID])
+
+● M | % ProdPositivation = 
+DIVIDE(
+    DISTINCTCOUNT(vwFactSales[ProductID]),
+    IF(
+        ISINSCOPE(vwDimProduct[SubcategoryName]),
+            CALCULATE(
+                COUNT(vwDimProduct[ProductID]),
+                ALL(vwDimProduct),
+                VALUES(vwDimProduct[SubcategoryName])
+            ),
+            CALCULATE(
+                COUNT(vwDimProduct[ProductID]),
+                ALL(vwDimProduct)
+            )
+    )
+)
+
+
+# ✂ AuxMeasures
+
+● M | Aux ColorGoal = 
+
+VAR vGoal = [M | % RevenueVsGoal]
+RETURN
+SWITCH(
+        TRUE(),
+        vGoal >= 1,
+        "#1DF9D4",
+        
+        vGoal >= 0.8 && vGoal< 1,
+        "#F9B71D",
+        "#F60000"
+    )
+
+
+● M | Aux DownArrow - LowerBound = 
+
+VAR vContext =  SELECTEDVALUE(zMetrics[Metric])
+VAR vAct = [M | Aux GrossRevenue(EDIT)]
+VAR vPrev = [M | t$ GrossRevenue LY]
+
+RETURN
+
+    IF(
+        vContext = "" && 
+        vAct < vPrev,
+        vAct
+    )
+
+● M | Aux GrossMarginEdit = 
+
+VAR vValue = [M | $ GrossMargin]
+
+VAR vFormat = SWITCH(
+        TRUE(),
+        vValue >= 1e9,
+        FORMAT(vValue,"#,0,,,.00\B"),
+        vValue >= 1e6 && vValue < 1000000000,
+        FORMAT(vValue,"#,0,,.00\M"),
+         vValue >= 1e3 && vValue < 1000000,
+        FORMAT(vValue,"#,0,.00\K"),
+        FORMAT(vValue,"0")
+    )
+
+RETURN
+vFormat
+
+# 🔎 SVG Measures
+● M | ImgVarGrossMargin(%) = 
+
+VAR vYoY = [M | % GrossMargin YoY (&)]
+VAR vYoYForm = FORMAT(vYoY,"+0.0%;-0.0%;-")
+VAR vSymbol = 
+
+    SWITCH(
+        TRUE(),
+        vYoY > 0, "⮝",
+        vYoY < 0, "⮟",
+        "▬"
+    )
+VAR vColor = 
+
+    SWITCH(
+        TRUE(),
+        vYoY >0, "green",
+        vYoY < 0, "#FA5959",
+        "black"
+    )
+
+-------------
+
+-- Formatting
+
+VAR vFont = "Segoe UI"
+VAR vLabelCategory = "Vs.LY"
+
+---------
+
+-- Animation
+
+VAR vAnimation = IF(vYoY < 0, "animation")
+
+RETURN
+
+"data:image/svg+xml,
+
+    <svg  viewBox='0 0 220 70' fill='none' xmlns='http://www.w3.org/2000/svg'>
+
+    <defs>
+        <style>
+
+        #data_lab, #arrow 
+            {"&vAnimation&": blink-1 1.5s infinite both;
+        }
+
+            @keyframes blink-1 {
+              0%,
+              50%,
+              100% {
+                opacity: 1;
+            }
+            25%,
+            75% {
+                opacity: 0;
+            }
+        }
+
+
+
+
+
+        </style>
+
+
+    </defs>
+
+
+	<g id='Frame Variations'>
+		<rect width='220' height='70' fill='none'/>
+
+		<text id='vs_prev_year' fill='" &vColor&"' xml:space='preserve' style='white-space: pre' font-family='" & vFont &"' font-size='12' letter-spacing='0em'>
+			<tspan x='53' y='38'> "&vLabelCategory&"   </tspan>
+		
+        </text>
+		<text id='data_lab' fill='" &vColor&"' xml:space='preserve' style='white-space: pre' font-family='" & vFont &"' font-size='15' letter-spacing='0em'>
+			<tspan x='22' y='19.6406'>          "& vYoYForm &"       </tspan>
+		
+        </text>
+		<text id='arrow' fill='" &vColor&"' xml:space='preserve' style='white-space: pre' font-family='" & vFont &"' font-size='15' letter-spacing='0em'>
+			<tspan x='1' y='19.6406'>           "& vSymbol &"              </tspan>
+		
+        </text>
+	</g>
+</svg>
+"
+
+● M | ImgSeller = 
+
+VAR vPic = SELECTEDVALUE(vwDimEmployee[ImgURL])
+
+RETURN
+
+
+
+"
+    <style>
+
+        div {
+
+            display: flex;
+            justify-content: center;
+            align-items - center;
+
+        }
+
+        img{
+            width: 90vw;
+            height: 90vw
+
+            object-fit: cover;
+
+            border-radius: 50%;
+
+            animation: rotate-scale-down 0.65s linear both;
+
+        }
+
+
+        @keyframes rotate-scale-down {
+            0% {
+               transform: scale(1) rotateZ(0);
+            }
+             50% {
+               transform: scale(0.5) rotateZ(180deg);
+            }
+             100% {
+               transform: scale(1) rotateZ(360deg);
+            }
+        }
+
+
+    </style>
+<img src = '"&vFoto&"' > 
+
+
+"
+
+● M | ImgSellerBorder = 
+
+ VAR vURL = SELECTEDVALUE(vwDimEmployee[ImgURL])
+
+VAR vColor = [M | Aux ColorGoal]
+
+VAR vEdgeThickness = 5
+
+VAR vBgColor = "#f1f1f1"
+
+VAR vOutlineColor = "#f1f1f1"
+
+ RETURN
+
+
+
+    "
+    <style>
+
+        .OUTLINE{
+            position:relative;
+
+            width: 100vw;
+            height: 100vh;
+
+            border: 1px solid "&vOutlineColor&";
+            border-radius: 10px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            overflow: hidden;
+
+        }
+
+
+
+        .BG{
+            position: absolute;
+
+            inset: "&vEdgeThickness&"px;
+
+            background: "&vBgColor&";
+
+            border-radius: 10px;
+
+        }
+
+        img{
+            width: 100%;
+            height: 100%;
+
+            object-fit: contain;
+
+            border-radius: 50%;
+
+            animation: rotate-scale-down 0.65s linear both;
+
+        }
+
+
+        @keyframes rotate-scale-down {
+            0% {
+               transform: scale(1) rotateZ(0);
+            }
+             50% {
+               transform: scale(0.5) rotateZ(180deg);
+            }
+             100% {
+               transform: scale(1) rotateZ(360deg);
+            }
+        }
+
+
+
+        .BORDER{
+            position:absolute;
+            width: 30%;
+            height: 200%;
+            background: "&vColor&"; 
+
+            animation: BorderAnimation 2.5s linear infinite;
+
+        }
+
+        @keyframes BorderAnimation {
+            from{
+                transform: rotate(0)
+            }
+
+            to{
+                transform: rotate(360deg)
+            }
+        }
+
+
+    </style>
+
+
+    <div class='OUTLINE'>
+
+        <div class='BORDER'>
+        </div>
+
+        <div class='BG'>
+            <img src='"&vURL&"'>
+        </div>
+
+    </div>    
+    "
+
+#📊 PVM Measures 
+
+● M | PVM Mix Effect on Cost = 
+
+    SUMX(
+        vwDimEmployee,
+            VAR vActSales = [M | $ GrossRevenue] 
+            VAR vPrevSales = [M | t$ PreviousSales(Total)]
+            VAR vActQTY = [M | QtYSold]
+            VAR vPrevQTY = [M | t$ PreviousQTY(Total)]
+                RETURN
+                    IF(
+                        AND(vActQTY > 0, vPrevQTY > 0),
+                            SUMX(
+                                VALUES(vwdCalendar[year_month_name]),
+                                     - ([M | PVM (AVG) ActUnitCost] - [M | PVM (AVG) PreviousUnitCost]) * ([M | QtYSold] - [M | t$ PreviousQTY(Total)])
+                            ),
+                        0
+                    )
+    )
+
+● M | PVM Mix Effect on Sales = 
+
+    SUMX(
+        vwDimEmployee,
+            VAR vActSales = [M | $ GrossRevenue] 
+            VAR vPrevSales = [M | t$ PreviousSales(Total)]
+            VAR vActQTY = [M | QtYSold]
+            VAR vPrevQTY = [M | t$ PreviousQTY(Total)]
+                RETURN
+                    IF(
+                        AND(vActQTY > 0, vPrevQTY > 0),
+                            SUMX(
+                                VALUES(vwdCalendar[year_month_name]),
+                                     ([M | PVM (AVG) ActUnitPrice] - [M | PVM (AVG) PreviousUnitPrice]) * ([M | QtYSold] - [M | t$ PreviousQTY(Total)])
+                            ),
+                        0
+                    )
+    )
+
+● M | PVM Volume Effect on Cost = 
+
+    SUMX(
+        vwDimEmployee,
+            VAR vActSales = [M | $ GrossRevenue] 
+            VAR vPrevSales = [M | t$ PreviousSales(Total)]
+            VAR vActQTY = [M | QtYSold]
+            VAR vPrevQTY = [M | t$ PreviousQTY(Total)]
+                RETURN
+                    IF(
+                        AND(vActQTY > 0, vPrevQTY > 0),
+                            SUMX(
+                                VALUES(vwdCalendar[year_month_name]),
+                                    - ([M | QtYSold] - [M | t$ PreviousQTY(Total)]) * [M | PVM (AVG) PreviousUnitCost]
+                            ),
+                        0
+                    )
+    )
+
+# 🔥 ParetoChart 
+
+M | % PAR ClassA AvgTicket = 
+
+● VAR vParValue = [M | % PAR ParetoValue]
+
+VAR vTable = 
+    WINDOW(
+        1,ABS,
+        -1,ABS,
+        FILTER(
+            ALLSELECTED(
+                vwDimProduct[SubcategoryName]),
+                [M | $ GrossRevenue] && [M | % PAR Running Vs TT ACM] <= vParValue 
+        )
+    )
+
+VAR vTableTT =  
+    WINDOW(
+        1,ABS,
+        -1,ABS,
+        FILTER(
+            ALL(
+                vwDimProduct[SubcategoryName]),
+                [M | $ GrossRevenue]
+        )
+    )
+
+VAR vACM = 
+    CALCULATE(
+        [M | $ GrossRevenue],
+        vTableTT
+    )
+
+VAR vPercentA = 
+
+    DIVIDE(
+        CALCULATE(
+            [M | $ GrossRevenue],
+            vTable
+        ),vACM
+    )
+
+VAR vDivide = DIVIDE(
+        [M | $ PAR ClassA Gross Revenue],
+        [M | $ PAR ClassA Qty]
+    )
+
+VAR vformat = SWITCH(
+        TRUE(),
+        ABS(vDivide) >= 1e9,
+        FORMAT(vDivide,"#,0,,,.00\B"),
+        ABS(vDivide) >= 1e6 && ABS(vDivide) < 1000000000,
+        FORMAT(vDivide,"#,0,,.00\M"),
+         ABS(vDivide) >= 1e3 && ABS(vDivide) < 1000000,
+        FORMAT(vDivide,"#,0,.00\K"),
+        FORMAT(vDivide,"0")
+    )
+
+
+RETURN
+
+vformat
+
+● M | % PAR ClassA HTML = 
+
+VAR vPorcentagem = [M | % PAR ClassA Representation] 
+
+VAR vRot_dados = FORMAT( vPorcentagem, "0%" ) 
+
+VAR vProgresso = 
+-- Fator movimentacao = 400 (tamanho maximo da barra) 
+
+    IF(
+        vPorcentagem <= 1,
+        ROUND(  vPorcentagem * 400, 0 ),
+        400
+    )
+
+VAR vEstouro_visibilidade = 
+-- Estouro é um texto, então 36 e 0 representa o tamanho da fonte 
+    IF( 
+        vPorcentagem <= 1,
+        0,
+        36
+    )
+
+VAR vAnimacao = "on" 
+-- Opções on / off 
+
+-----------------------------------------
+-- FORMATAÇÕES 
+-----------------------------------------
+
+
+VAR vBarra_fundo_cor = "#B9C9C8"
+
+VAR vMeta_cor = 
+    SWITCH(
+        TRUE(),
+        vPorcentagem >= 1, "#25C9C1",
+        vPorcentagem >= 0.81, "#25C9C1",
+        "#25C9C1"
+    )
+
+
+VAR vFonte = "Segoe UI" 
+
+VAR vRot_cat = "% of Representation"
+VAR vRot_cat_cor = "Black"
+VAR vRot_cat_tam = 20
+
+VAR vRot_dados_cor = "Black"
+VAR vRot_dados_tam = 20
+VAR vRot_dados_peso = 600
+
+
+VAR vPrefixo = "data:image/svg+xml,"
+
+RETURN 
+
+
+
+"
+<svg  viewBox='0 0 474 119' fill='none' xmlns='http://www.w3.org/2000/svg'>
+	
+    <defs>
+        <style>
+
+            #marcador {
+                transform: translateX(" & vProgresso& "px);
+
+                " & if( vAnimacao = "on", "animation", BLANK() ) & ": anima_marcador .7s linear forwards
+            }
+
+            #progresso {
+                width: " & vProgresso & "px;
+
+                " & if( vAnimacao = "on", "animation", BLANK() ) & ": anima_barra .7s linear forwards
+            }
+
+            #estouro {
+                opacity: 1;
+                " & if( vAnimacao = "on", "animation", BLANK() ) & ": anima_estouro 1.7s linear forwards
+            }
+
+            /* ----------------- ANIMAÇÕES --------------- */
+
+
+            @keyframes anima_marcador {
+                
+                from {
+                    transform: translateX(0px)
+                }
+
+                to {
+                    transform: translateX(" & vProgresso& "px)
+                }
+
+            }
+
+             @keyframes anima_barra {
+                
+                from {
+                    width: 0
+                }
+
+                to {
+                     width: " & vProgresso & "px
+                }
+
+            }
+
+            @keyframes anima_estouro {
+                
+                from {
+                    opacity: 0
+                }
+
+                to {
+                     opacity: 1
+                }
+
+            }
+
+
+        </style>
+
+    </defs>
+    
+    <g id='barra_progresso'>
+		
+		<rect id='barra_fundo' x='37' y='48' width='400' height='15' fill='" & vBarra_fundo_cor & "'/>
+		
+        
+        <rect id='progresso' x='37' y='48' width='400' height='15' fill='" & vMeta_cor & "'/>
+		
+        
+        <g id='marcador'>
+			<rect id='quadro' x='7' y='8' width='60' height='30' rx='3' fill='" & vMeta_cor & "'/>
+			<path id='triangulo' d='M37 45L28.3397 30L45.6603 30L37 45Z' fill='" & vMeta_cor & "'/>
+			
+            
+            <text id='rot_dados' text-anchor='middle' fill='" & vRot_dados_cor & "'  font-family='" & vFonte & "' font-size='" & vRot_dados_tam& "' font-weight='" & vRot_dados_peso & "' >
+				<tspan x='38' y='29.6523'>  " & vRot_dados  & " </tspan>
+			</text>
+
+		</g>
+		
+        
+        <text id='estouro' fill='white'  font-family='" & vFonte & "' font-size='" & vEstouro_visibilidade & "' >
+			<tspan x='419' y='69.3047'> 💥  </tspan>
+		</text>
+
+
+		<text id='rot_categoria' text-anchor='middle' fill='" & vRot_cat_cor & "'  font-family='" & vFonte & "' font-size='" & vRot_cat_tam& "' >
+			<tspan x='237' y='102.545'>   " & vRot_cat & "   </tspan>
+		</text>
+
+        
+	</g>
+</svg>
+"
+
+
+● M | % PAR ClassA Representation = 
+
+VAR vParValue = [M | % PAR ParetoValue]
+
+VAR vTable = 
+    WINDOW(
+        1,ABS,
+        -1,ABS,
+        FILTER(
+            ALLSELECTED(
+                vwDimProduct[SubcategoryName]),
+                [M | $ GrossRevenue] && [M | % PAR Running Vs TT ACM] <= vParValue 
+        )
+    )
+
+VAR vTableTT =  
+    WINDOW(
+        1,ABS,
+        -1,ABS,
+        FILTER(
+            ALL(
+                vwDimProduct[SubcategoryName]),
+                [M | $ GrossRevenue]
+        )
+    )
+
+VAR vACM = 
+    CALCULATE(
+        [M | $ GrossRevenue],
+        vTableTT
+    )
+
+VAR vPercentA = 
+
+    DIVIDE(
+        CALCULATE(
+            [M | $ GrossRevenue],
+            vTable
+        ),vACM
+    )
+
+RETURN
+
+vPercentA
+
+# 📉 Statiscal Measures
+
+● M | $ STATS MeanRevenueCat = 
+
+ VAR vTable = 
+    WINDOW(
+        1,ABS,
+        -1,ABS,
+            FILTER(
+                ALL(
+                    vwDimProduct[CategoryName]
+                ),[M | $ GrossRevenue]
+            )
+    )
+VAR vMean = 
+
+    IF(
+        ISBLANK([M | $ GrossRevenue]) = TRUE(),0,
+        AVERAGEX(
+        vTable,
+        [M | $ GrossRevenue]
+    )
+        
+)
+
+
+
+RETURN 
+
+    CALCULATE(
+        vMean,
+        FILTER(
+            vwFactSales,
+            NOT 
+            ISBLANK(
+                [M | $ GrossRevenue]
+            ) && 
+            [M | $ GrossRevenue] > 0
+        )
+    )
+
+
+● M | $ STATS Median = 
+VAR vTable = 
+    WINDOW(
+        1,ABS,
+        -1,ABS,
+        FILTER(
+            ALL(
+            vwDimProduct[SubcategoryName]),
+            [M | $ GrossRevenue]
+        )
+        
+    )
+RETURN
+
+    MEDIANX(
+        vTable,
+        [M | $ GrossRevenue]
+    )
+   
+        
+M | $ STATS StDev = 
+VAR vTable = 
+    WINDOW(
+         1,ABS,
+        -1,ABS,
+            FILTER(
+                ALL(
+                    vwDimProduct[SubcategoryName]
+                ),[M | $ GrossRevenue]
+            )
+    )
+● VAR vStDev = 
+
+    STDEVX.P(
+        vTable,
+        [M | $ GrossRevenue]
+    )
+
+
+RETURN 
+
+    CALCULATE(
+        vStDev,
+        FILTER(
+            vwFactSales,
+            NOT 
+            ISBLANK(
+                [M | $ GrossRevenue]
+            ) && 
+            [M | $ GrossRevenue] > 0
+        )
+    )
+
+
+   
+        
+    
+
+
+    
