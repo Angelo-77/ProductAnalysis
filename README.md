@@ -46,6 +46,7 @@ This dashboard enables managers to:
   - Calendar (`vwdCalendar`)
   - Bridge tables (e.g. `vwDimStoreBridge`)
   - Dimensions (Product, Customer, Employee, Territory...)
+  - SQL Code in the folder [SQLCode](https://github.com/Angelo-77/ProductAnalysis/blob/4f16eaff580793891e8fcf898b310ce9a3d3db7b/SQLCode)
  
 > 📸 FactSales Diagram and View:
   - ![Image](https://github.com/user-attachments/assets/f6f3175a-50ff-4b67-8151-5d46bc0b930e)
@@ -53,6 +54,7 @@ This dashboard enables managers to:
 
 > 📸 DimCalendar as procedure:
   - ![Image](https://github.com/user-attachments/assets/f3294313-1ef7-4ce3-98d9-6e695b3c9d18)
+> Dim Calendar code in the folder [DimCalendar_Procedure](https://github.com/Angelo-77/ProductAnalysis/blob/4f16eaff580793891e8fcf898b310ce9a3d3db7b/DimCalendar_Procedure)
 
 ### 2. 🔗 Power BI Data Model
 - Imported all views using **Import Mode** for performance.
@@ -81,7 +83,7 @@ All measures are organized into **logical folders** for clarity:
 > 📸 Folder Display:
   - ![Image](https://github.com/user-attachments/assets/4e7e5c3c-3e31-4629-b20d-2141b497ab65)
 
-> 🏹 To see these measures in dax sytnax - click in this folder ['DaxMeasures'](https://github.com/Angelo-77/ProductAnalysis/blob/baf9b538b59fbe4e4aabef6d458534138693139f/SQLCode)
+> 🏹 To see these measures in dax sytnax - click in this folder ['DaxMeasures'](https://github.com/Angelo-77/ProductAnalysis/blob/4f16eaff580793891e8fcf898b310ce9a3d3db7b/DaxMeasures)
 ---
 
 ### 4. 🎨 UI/UX Design with Figma
