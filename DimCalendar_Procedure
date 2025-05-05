@@ -1,0 +1,236 @@
+## 🛠 Dim Calendar - Procedure
+
+#SQL_CODE
+
+CREATE OR ALTER PROCEDURE usp_CreateDynamicCalendar	
+
+(
+    @StartDate DATE = NULL,
+    @EndDate DATE = NULL,
+    @FiscalStartMonth INT = 1, -- e.g., 1 for Jan, 4 for Apr, 7 for Jul
+    @ClosedYear BIT = 1       -- 1 = round to full years, 0 = leave partial range
+)
+AS
+BEGIN
+    SET LANGUAGE English
+	SET NOCOUNT ON;
+
+    -- STEP 1: Dynamically define start/end if NULL
+    IF @StartDate IS NULL
+    BEGIN
+        SELECT @StartDate = (
+            SELECT MIN(D) FROM (
+                SELECT MIN([Date]) FROM vwFactFinance
+                UNION ALL
+                SELECT MIN([Date]) FROM vwFactFinance
+                UNION ALL
+                SELECT MIN([Date]) FROM vwFactFinance
+                UNION ALL
+                SELECT MIN([Date]) FROM vwFactFinance
+            ) AS AllDates(D)
+        )
+    END
+
+    IF @EndDate IS NULL
+    BEGIN
+        SELECT @EndDate = DATEADD(YEAR, 2, (
+            SELECT MAX(D) FROM (
+                SELECT MAX([Date]) FROM vwFactFinance
+                UNION ALL
+                SELECT MAX([Date]) FROM vwFactFinance
+                UNION ALL
+                SELECT MAX([Date]) FROM vwFactFinance
+                UNION ALL
+                SELECT MAX([Date]) FROM vwFactFinance
+            ) AS AllDates(D)
+        ))
+    END
+
+	IF @StartDate IS NULL
+	BEGIN
+	    PRINT 'Warning: No date found. Using fallback start date'
+	    SET @StartDate = DATEADD(YEAR, -5, GETDATE())
+	END
+	
+	IF @EndDate IS NULL
+	BEGIN
+	    PRINT 'Warning: No date found. Using fallback end date'
+	    SET @EndDate = DATEADD(YEAR, 2, GETDATE())
+	END
+
+	PRINT 'StartDate: ' + ISNULL(CONVERT(VARCHAR, @StartDate), 'NULL')
+	PRINT 'EndDate: ' + ISNULL(CONVERT(VARCHAR, @EndDate), 'NULL')
+	PRINT 'StartYear: ' + ISNULL(CONVERT(VARCHAR, YEAR(@StartDate)), 'NULL')
+	PRINT 'EndYear: ' + ISNULL(CONVERT(VARCHAR, YEAR(@EndDate)), 'NULL')
+
+    DECLARE @TODAY              DATE = CAST( GETDATE() AS DATE )
+	DECLARE @StartYear          INT = YEAR(@StartDate)
+    DECLARE @EndYear            INT = YEAR(@EndDate)
+    DECLARE @CalendarStart      DATE = DATEFROMPARTS(@StartYear, 1, 1)
+    DECLARE @CalendarEnd        DATE = CASE 
+                                         WHEN @ClosedYear = 1 THEN DATEFROMPARTS(@EndYear, 12, 31)
+                                         ELSE @EndDate 
+                                    END
+
+	IF OBJECT_ID('dbo.dCalendar') IS NULL
+
+	CREATE TABLE dCalendar (
+
+ [date] DATE 
+, [year] INT
+, [start_of_year] DATE
+, [end_of_year] DATE
+, [month] TINYINT
+, [star_of_month] DATE
+, [end_of_month] DATE
+, [day_in_month] TINYINT
+, [year_month_number] INT
+, [year_month_name] VARCHAR(8)
+, [day] TINYINT
+, [day_name] VARCHAR(15)
+, [day_name_short] CHAR(3)
+, [day_of_week] TINYINT
+, [day_of_year] SMALLINT
+, [month_name] VARCHAR(15)
+, [month_name_short] CHAR(3)
+, [quarter] TINYINT
+, [quarter_name] CHAR(2)
+, [year_quarter_number] INT
+, [year_quarter_name] VARCHAR(7)
+, [start_of_quarter] DATE
+, [end_of_quarter] DATE
+, [week_of_year] TINYINT 
+, [star_of_week] DATE
+, [end_of_week] DATE
+, [fiscal_year] INT
+, [fiscal_quarter] TINYINT
+, [fiscal_month] TINYINT
+, [day_offset] INT
+, [month_offset] INT
+, [quarter_offset] INT
+, [year_offset] INT
+
+	)
+
+ELSE 
+    IF OBJECT_ID('dbo.dCalendar') IS NOT NULL
+        DELETE FROM dbo.dCalendar
+
+    ;WITH Dates AS (
+        SELECT DISTINCT DATEADD(DAY, A.SEQUENCE -1, @CalendarStart) AS [Date]
+        FROM dbo.dTimes A WITH(NOLOCK)
+		WHERE A.SEQUENCE <= DATEDIFF( DAY , @CalendarStart , @CalendarEnd ) + 1
+    )
+    
+	INSERT INTO dbo.dCalendar
+( 
+
+  [date]
+, [year] 
+, [start_of_year] 
+, [end_of_year] 
+, [month] 
+, [star_of_month] 
+, [end_of_month] 
+, [day_in_month] 
+, [year_month_number] 
+, [year_month_name]
+, [day] 
+, [day_name]
+, [day_name_short]
+, [day_of_week]
+, [day_of_year]
+, [month_name]
+, [month_name_short]
+, [quarter]
+, [quarter_name]
+, [year_quarter_number]
+, [year_quarter_name]
+, [start_of_quarter]
+, [end_of_quarter]
+, [week_of_year]
+, [star_of_week]
+, [end_of_week]
+, [fiscal_year]
+, [fiscal_quarter]
+, [fiscal_month]
+, [day_offset]
+, [month_offset]
+, [quarter_offset]
+, [year_offset]
+
+)
+
+    SELECT A.[DATE]                                                                     AS [date]
+     , DATEPART( yy , A.[DATE] )                                                    AS [year]
+     , DATEFROMPARTS( YEAR( A.[DATE] ), 1 , 1)                                    AS [start_of_year]
+     , DATEFROMPARTS(  YEAR( A.[DATE] ),12 , 31 )                                  AS [end_of_year]
+	 , DATEPART( mm , A.[DATE] )                                                    AS [month]
+	 , DATEFROMPARTS( YEAR( A.[DATE] ),MONTH( A.[DATE] ), 1 )                    AS [star_of_month]
+	 , EOMONTH( A.[DATE] )                                                          AS [end_of_month]
+	 , DATEPART( dd , EOMONTH( A.[DATE] ) )                                         AS [day_in_month]
+
+     , CONCAT( 
+			YEAR( A.[DATE] ) , 
+			CONCAT(
+				REPLICATE( '0' , 2 - LEN( MONTH( A.[DATE] ) ) ) ,
+				MONTH( A.[DATE] )
+			)
+	   )                                                                            AS [year_month_number]
+	 
+	 , CONCAT( 
+			DATEPART( yy , A.[DATE] ) , 
+			'-' ,  
+			LOWER( LEFT( DATENAME( mm , A.[DATE] ) , 3 ) )  )                       AS [year_month_name]
+	 
+	 
+	 , DATEPART( dd , A.[DATE] )                                                    AS [day]
+	 , LOWER( DATENAME( dw , A.[DATE] ) )                                           AS [day_name]
+	 , LOWER( LEFT( DATENAME( dw , A.[DATE] ) , 3 ) )                               AS [day_name_short]
+	 , DATEPART( [weekday] , A.[DATE] )                                             AS [day_of_week]
+	 , DATEPART( dy , A.[DATE] )                                                    AS [day_of_year]
+	 , LOWER( DATENAME( mm , A.[DATE] ) )                                           AS [month_name]
+	 , LOWER( LEFT( DATENAME( mm , A.[DATE] ) , 3 ) )                               AS [month_name_short]
+	 , DATEPART( qq , A.[DATE] )                                                    AS [quarter]
+	 , CONCAT( 'Q' , DATEPART( qq , A.[DATE] ) )                                    AS [quarter_name]
+	 , CONCAT( DATEPART( yy , A.[DATE] ) , DATEPART( qq , A.[DATE] ) )              AS [year_quarter_number]
+	 , CONCAT( DATEPART( yy , A.[DATE] ) , ' Q' , DATEPART( qq , A.[DATE] ) )       AS [year_quarter_name]
+	 , DATEFROMPARTS( YEAR( A.[DATE] ), (DATEPART( qq , A.[DATE] )*3)-2, 1)         AS [start_of_quarter]
+	 , EOMONTH( DATEFROMPARTS( YEAR( A.[DATE] ), (DATEPART( qq , A.[DATE] ))*3, 1),0) AS [end_of_quarter]
+	 , DATEPART( wk , A.[DATE] )                                                    AS [week_of_year]
+	 , DATEADD( DAY , - ( DATEPART( [weekday] , A.[DATE] ) - 1 ) , A.[DATE] )       AS [star_of_week]
+	 , DATEADD( DAY , 7 - DATEPART( [weekday] , A.[DATE] ) , A.[DATE] )             AS [end_of_week]
+	 
+	 , CASE @FiscalStartMonth 
+	        WHEN 1 
+			THEN YEAR( A.[DATE] ) 
+			ELSE YEAR( A.[DATE] ) + CAST( ( MONTH( A.[DATE] ) + ( 13 - @FiscalStartMonth ) ) / 13 AS INT ) 
+	   END                                                                          AS [fiscal_year]
+
+     , DATEPART( 
+			qq , 
+			DATEFROMPARTS( 
+				YEAR( A.[DATE] ) , 
+				( ( MONTH( A.[DATE] ) + (13 - @FiscalStartMonth) - 1 ) % 12 ) + 1 , 
+				1 
+			) 
+		)                                                                           AS [fiscal_quarter]
+
+	 
+	 , ( ( MONTH( A.[DATE] ) + (13 - @FiscalStartMonth) - 1 ) % 12 ) + 1           AS [fiscal_month]
+	 , DATEDIFF( DAY     , @TODAY , A.[DATE] )                                       AS [day_offset]
+     , DATEDIFF( MONTH   , @TODAY , A.[DATE] )                                       AS [month_offset]
+	 , DATEDIFF( QUARTER , @TODAY , A.[DATE] )                                       AS [quarter_offset]
+	 , DATEDIFF( YEAR    , @TODAY , A.[DATE] )                                       AS [year_offset]
+
+
+  FROM DATES                A WITH(NOLOCK)
+ ORDER
+    BY 1
+
+END
+
+
+
+
+
