@@ -1,0 +1,357 @@
+## 👩🏻‍💻 SQL Code for Project
+
+# 🛠 Views
+
+● FactStock
+vwFactStock AS
+SELECT
+    PI.ProductID
+    ,P.Name           AS ProductName
+    ,PI.LocationID
+    ,L.Name           AS LocationName
+    ,PI.Shelf
+    ,PI.Bin
+    ,PI.Quantity
+	,PCH.StandardCost AS 'HistoricalCost'
+	,L.CostRate
+    ,PI.ModifiedDate  AS StockDate
+FROM Production.ProductInventory PI
+LEFT JOIN Production.Product P
+    ON PI.ProductID = P.ProductID
+LEFT JOIN Production.Location L
+    ON PI.LocationID = L.LocationID
+LEFT JOIN Production.ProductCostHistory PCH
+	ON PI.ProductID = PCH.ProductID
+
+
+● FactShippingRate 
+CREATE VIEW vwFactShippingRate AS
+SELECT 
+ShipMethodID
+,Name AS 'ShippingName'
+,ShipBase
+,ShipRate
+FROM Purchasing.ShipMethod
+
+
+● FactSalesRate 
+CREATE VIEW vwFactSalesRate AS 
+SELECT 
+ CurrencyRateDate
+,CurrencyRateID
+,ToCurrencyCode AS 'CurrencyCode'
+,EndOfDayRate   AS 'CurrencyRate'
+FROM SALES.CurrencyRate
+
+● FactSales 
+ALTER VIEW vwFactSales AS 
+SELECT 
+ SOH.OrderDate
+,SOH.DueDate
+,SOH.ShipDate
+,SOF.StartDate	                 AS 'StartDateOffer'
+,SOF.EndDate                     AS 'EndDateOffer'
+,SOD.SalesOrderDetailID
+,SOD.SalesOrderID              
+,SOH.CustomerID
+,COALESCE(SOH.SalesPersonID,0) AS 'SalesPersonID'
+,SOH.TerritoryID
+,SOH.BillToAddressID
+,SOH.ShipToAddressID
+,SOH.ShipMethodID
+,COALESCE(SOH.CurrencyRateID,0) AS 'CurrencyRateID'
+,SOH.Status
+,SOH.OnlineOrderFlag
+,SOD.ProductID
+,SOD.OrderQty
+,CASE 
+	WHEN PCH.StandardCost IS NULL THEN 
+		(SELECT
+			MAX(StandardCost)
+		FROM Production.ProductCostHistory
+		WHERE ProductID = SOD.ProductID
+		)
+	 ELSE   PCH.StandardCost 
+ END AS 'HistoricalCost'
+,CASE 
+	WHEN PPH.ListPrice IS NULL  THEN 
+
+		(SELECT
+			MAX(ListPrice)
+		FROM Production.ProductListPriceHistory
+		WHERE ProductID = SOD.ProductID
+		)	
+	ELSE PPH.ListPrice  
+ END AS 'HistoricalPrice'
+,SOD.UnitPrice
+,SOD.UnitPriceDiscount
+,SOD.SpecialOfferID
+,SOF.Type                        AS 'OfferType'
+,SOF.Category                    AS 'OfferCategory'
+,SOF.MinQty                      AS 'MinQtyOffer'
+,SOF.MaxQty                      AS 'MaxQtyOffer'
+
+FROM SALES.SalesOrderDetail SOD
+
+LEFT JOIN SALES.SalesOrderHeader SOH
+
+ON SOD.SalesOrderID = SOH.SalesOrderID
+
+LEFT JOIN SALES.SpecialOfferProduct SOP 
+
+ON SOD.SpecialOfferID = SOP.SpecialOfferID AND SOD.ProductID = SOP.ProductID
+
+LEFT JOIN SALES.SpecialOffer SOF
+
+ON SOP.SpecialOfferID = SOF.SpecialOfferID
+
+LEFT JOIN Production.ProductCostHistory PCH 
+
+	ON SOD.ProductID = PCH.ProductID 
+	AND SOH.OrderDate >= PCH.StartDate 
+	AND (PCH.EndDate IS NULL OR SOH.OrderDate <= COALESCE(PCH.EndDate,GETDATE()))
+	AND SOH.OrderDate >= 
+	(SELECT  
+	MAX(COALESCE(EndDate,GETDATE())) 
+	FROM Production.ProductCostHistory 
+	WHERE ProductID = SOD.ProductID
+		) 
+
+LEFT JOIN Production.ProductListPriceHistory PPH 
+
+	ON SOD.ProductID = PPH.ProductID 
+	AND SOH.OrderDate >= PPH.StartDate 
+	AND (PPH.EndDate IS NULL OR SOH.OrderDate <= COALESCE(PPH.EndDate,GETDATE())) 
+	AND SOH.OrderDate <= 
+	(SELECT  
+	MAX(COALESCE(EndDate,GETDATE())) 
+	FROM Production.ProductListPriceHistory 
+	WHERE ProductID = SOD.ProductID
+		) 
+
+LEFT JOIN vwDimProduct vwDP
+
+ON SOD.ProductID = vwdp.ProductID
+
+
+
+● FactProdPrices 
+ALTER VIEW vwFactProdPrices AS
+SELECT
+
+     PLPH.ProductID 
+	,PLPH.ListPrice                         AS 'HistoricalPrice'
+	,PLPH.StartDate                         AS StartStockPriceDate
+	,COALESCE(PLPH.EndDate,GETDATE())       AS EndStockPriceDate
+
+FROM Production.ProductListPriceHistory PLPH
+
+
+● FactProdCosts 
+CREATE VIEW vwFactProdCosts AS
+SELECT
+
+     PCH.ProductID 
+	,PCH.StandardCost                         AS 'HistoricalPrice'
+	,PCH.StartDate                         AS StartStockPriceDate
+	,COALESCE(PCH.EndDate,GETDATE())       AS EndStockPriceDate
+
+FROM Production.ProductCostHistory PCH
+
+● DimStore 
+ALTER VIEW vwDimStore AS
+WITH RankedStores AS (
+  SELECT
+    SC.StoreID,
+    SS.Name AS StoreName,
+    SC.TerritoryID,
+    ST.Name AS TerritoryName,
+    ST.CountryRegionCode AS CountryCode,
+    CR.Name AS CountryName,
+    ROW_NUMBER() OVER (PARTITION BY SC.StoreID ORDER BY SC.CustomerID) AS 'RNK'
+  FROM Sales.Store SS
+  LEFT JOIN Sales.Customer SC
+    ON SS.BusinessEntityID = SC.StoreID
+  LEFT JOIN Sales.SalesTerritory ST
+    ON SC.TerritoryID = ST.TerritoryID
+  LEFT JOIN Person.CountryRegion CR
+    ON ST.CountryRegionCode = CR.CountryRegionCode
+)
+SELECT *
+FROM RankedStores
+WHERE RNK = 1;
+
+
+● DimProduct 
+CREATE VIEW vwDimProduct AS
+SELECT 
+    P.ProductID,
+    P.Name AS 'ProductName',
+    P.ProductNumber,
+    P.MakeFlag,
+    P.FinishedGoodsFlag,
+    P.Color,
+    P.SafetyStockLevel,
+    P.ReorderPoint,
+    P.StandardCost,
+    P.ListPrice,
+    P.Size,
+	P.Weight,
+	P.DaysToManufacture,
+    P.ProductLine,
+    P.Class,
+    P.Style,
+    P.SellStartDate,
+    P.SellEndDate,
+    P.DiscontinuedDate,
+	PC.Name  AS 'CategoryName',
+	PSC.Name AS 'SubcategoryName',
+    PM.Name  AS 'ProductModel',
+	UM.UnitMeasureCode,
+	UM.Name AS 'UnitMeasureName'
+
+FROM Production.Product P
+	LEFT JOIN Production.ProductSubcategory PSC 
+    ON P.ProductSubcategoryID = PSC.ProductSubcategoryID
+	LEFT JOIN Production.ProductCategory PC 
+    ON PSC.ProductCategoryID = PC.ProductCategoryID
+	LEFT JOIN Production.UnitMeasure UM
+    ON P.SizeUnitMeasureCode = UM.UnitMeasureCode
+	LEFT JOIN Production.ProductModel PM 
+    ON P.ProductModelID = PM.ProductModelID
+
+
+
+
+● DimEmployee 
+CREATE VIEW vwDimEmployee AS
+WITH RankedEmployee AS (
+SELECT 
+ HRE.BusinessEntityID
+ ,HREMan.BusinessEntityID AS 'ManagerID'
+,PP.FirstName
+,PP.MiddleName
+,PP.LastName
+,HRE.JobTitle
+,HRE.BirthDate
+,HRE.MaritalStatus
+,HRE.Gender
+,HRE.OrganizationLevel
+,HRE.OrganizationNode.ToString() AS 'OrgPath'
+,HRD.Name          AS 'DertamentName'
+,HRD.GroupName     AS 'DepartamentGroup'
+,SSP.CommissionPct AS 'ComissionIndex'
+,ROW_NUMBER() OVER ( PARTITION BY HRE.BusinessEntityID ORDER BY HEDH.ModifiedDate DESC ) AS 'Rnk'
+
+FROM HumanResources.Employee HRE
+
+LEFT JOIN PERSON.Person PP
+
+ON HRE.BusinessEntityID = PP.BusinessEntityID
+
+LEFT JOIN HumanResources.EmployeeDepartmentHistory HEDH
+
+ON HRE.BusinessEntityID = HEDH.BusinessEntityID
+
+LEFT JOIN HumanResources.Department HRD
+
+ON HEDH.DepartmentID = HRD.DepartmentID
+
+LEFT JOIN SALES.SalesPerson SSP
+
+ON HRE.BusinessEntityID = SSP.BusinessEntityID
+
+LEFT JOIN HumanResources.Employee HREMan -- To get the manager of each employee
+
+ON HRE.OrganizationNode.GetAncestor(1) = HREMan.OrganizationNode
+
+)
+
+SELECT * FROM RankedEmployee WHERE Rnk = 1 
+
+
+
+
+
+● DimCustomer
+CREATE VIEW vwDimCustomer AS 
+
+WITH RankedAddress AS(
+SELECT
+ PP.BusinessEntityID
+,PP.PersonType
+,PP.FirstName
+,PP.MiddleName
+,PP.LastName
+,PAD.AddressID
+,PAD.AddressTypeID
+,PADT.Name AS 'AddressTypeName'
+,PADD.AddressLine1
+,PADD.AddressLine2
+,PADD.City
+,PADD.ModifiedDate
+,PSP.StateProvinceCode
+,PSP.Name AS 'StateProvinceName'
+,PSP.TerritoryID
+,PCR.CountryRegionCode
+,PCR.Name AS 'CountryName'
+,ROW_NUMBER() OVER ( 
+	PARTITION BY PP.BusinessEntityID 
+	ORDER BY PADD.ModifiedDate, 
+		CASE 
+			WHEN PADT.Name = 'Home' 
+			THEN 1 
+			WHEN PADT.Name = 'Shipping' 
+			THEN 2 
+		 ELSE 3 END ) AS 'Rnk'
+
+FROM PERSON.Person PP
+
+LEFT JOIN PERSON.BusinessEntityAddress PAD
+
+ON PP.BusinessEntityID = PAD.BusinessEntityID
+
+LEFT JOIN PERSON.AddressType PADT 
+
+ON PAD.AddressTypeID = PADT.AddressTypeID
+
+LEFT JOIN PERSON.Address PADD
+
+ON PAD.AddressID = PADD.AddressID
+
+LEFT JOIN PERSON.StateProvince PSP
+
+ON PADD.StateProvinceID = PSP.StateProvinceID
+
+LEFT JOIN PERSON.CountryRegion PCR
+
+ON PSP.CountryRegionCode = PCR.CountryRegionCode
+
+WHERE PP.PersonType IN ('IN', 'SC')
+)
+
+SELECT * FROM RankedAddress WHERE Rnk = 1 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
